@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # this & SITE_ID = 1 used by the social account app to create the proper callback URLs when connecting via social media accounts
+    'allauth',
+    'allauth.account',  # user account stuff like logging in & out(user registration and password reset)
+    'allauth.socialaccount',  # logging via social media
 ]
 
 MIDDLEWARE = [
@@ -59,13 +64,36 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
-                'django.template.context_processors.request',
+                'django.template.context_processors.request',  # required by allauth
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SITE_ID = 1
+
+# since by default allauth will send confirmation emails to any new accounts.
+# we need to temporarily log those emails to the console so we can get the
+# confirmation links. to do that we can set the EMAIL_BACKEND setting...
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # allow authentication using either usernames or emails
+ACCOUNT_EMAIL_REQUIRED = True  # email is required to register for the site
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # verifying email is mandatory
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
+ACCOUNT_USERNAME_MIN_LENGTH = 4  # minimum username length of four characters
+LOGIN_URL = '/accounts/login/'  # specify a login url and a
+LOGIN_REDIRECT_URL = '/'  # url to redirect back to after logging in
 
 WSGI_APPLICATION = 'boutique_ado.wsgi.application'
 
