@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',  # user account stuff like logging in & out(user registration and password reset)
     'allauth.socialaccount',  # logging via social media
+
     'home',
 ]
 
@@ -90,6 +91,7 @@ SITE_ID = 1
 # we need to temporarily log those emails to the console so we can get the
 # confirmation links. to do that we can set the EMAIL_BACKEND setting...
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'  # allow authentication using either usernames or emails
 ACCOUNT_EMAIL_REQUIRED = True  # email is required to register for the site
@@ -150,6 +152,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
