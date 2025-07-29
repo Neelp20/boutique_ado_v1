@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Category(models.Model):
 
@@ -29,5 +27,5 @@ class Product(models.Model):
     image = models.ImageField(null=True, blank=True)
 
     def __str__(self):
-        return self.name 
+        return self.name
     # each product requires a name, a description, and a price but everything else is optional.
