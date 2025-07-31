@@ -12,8 +12,23 @@ def all_products(request):
     products = Product.objects.all()
     query = None
     categories = None
+    sort = None
+    direction = None
 
     if request.GET:
+        if 'sort' in request.GET:  # wether sort is in request.GET
+            sortkey = request.GET['sort']  # if it is
+            sort = sortkey
+            if sortkey == 'name':  # whether sortkey is equal to name
+                sortkey == 'lower_name'  # have renamed sortkey to lower_name. if it is will set it to lower_name which is the field will create with the annotation.
+                products = products.annotate(lower_name=Lower('name'))  # now to actually do the annotation, we are using Lower function on the original name field here.
+
+            if 'direction' in request.GET:
+                direction = request.GET['direction']
+                if direction == 'desc':  # check whether it is descending
+                    sortkey = f'-{sortkey}'  # have used minus using string formatting, which will reverse the order
+            products = products.order_by(sortkey)  # to sort the products, we need to use the order by model method
+
         if 'category' in request.GET:
             categories = request.GET['category'].split(',')
             products = products.filter(category__name__in=categories)
@@ -28,10 +43,13 @@ def all_products(request):
             queries = Q(name__icontains=query) | Q(description__icontains=query)
             products = products.filter(queries)
 
+    current_sorting = f'{sort}_{direction}'
+
     context = {
         'products': products,
         'search_term': query,
         'current_categories': categories,
+        'current_sorting': current_sorting,
     }
 
     return render(request, 'products/products.html', context)
