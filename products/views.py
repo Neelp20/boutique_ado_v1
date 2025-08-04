@@ -22,6 +22,9 @@ def all_products(request):
             if sortkey == 'name':  # whether sortkey is equal to name
                 sortkey == 'lower_name'  # have renamed sortkey to lower_name. if it is will set it to lower_name which is the field will create with the annotation.
                 products = products.annotate(lower_name=Lower('name'))  # now to actually do the annotation, we are using Lower function on the original name field here.
+                
+            if sortkey == 'category':
+                sortkey = 'category__name'
 
             if 'direction' in request.GET:
                 direction = request.GET['direction']
