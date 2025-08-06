@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal  # use decimal when working with money co its more accurate
 from django.conf import settings
 
 
