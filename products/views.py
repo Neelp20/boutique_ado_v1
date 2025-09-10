@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q  # special object called Q to generate a search query
 from django.db.models.functions import Lower
 
@@ -73,18 +74,23 @@ def product_detail(request, product_id):
     return render(request, 'products/product_detail.html', context)
 
 
+@login_required
 def add_product(request):
     """ Add a product to the store """
+    if not request.user.is_superuser:
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))
+    
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():  # check if the form is valid
-            product = form.save()  # then save it
-            messages.success(request, 'Successfully added product!')  # and send the success message
+        if form.is_valid():
+            product = form.save()
+            messages.success(request, 'Successfully added product!')
             return redirect(reverse('product_detail', args=[product.id]))
         else:
-            messages.error(request, 'Failed to add product. Please ensure the form is valid.')  # if there is any error, will show the message
+            messages.error(request, 'Failed to add product. Please ensure the form is valid.')
     else:
-        form = ProductForm()  #will make sure, it doesn't wipe out the form errors
+        form = ProductForm()
         
     template = 'products/add_product.html'
     context = {
@@ -94,8 +100,13 @@ def add_product(request):
     return render(request, template, context)
 
 
+@login_required
 def edit_product(request, product_id):
     """ Edit a product in the store """
+    if not request.user.is_superuser:
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))
+    
     product = get_object_or_404(Product, pk=product_id)
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
@@ -118,8 +129,13 @@ def edit_product(request, product_id):
     return render(request, template, context)
 
 
+@login_required
 def delete_product(request, product_id):
     """ Delete a product from the store """
+    if not request.user.is_superuser:
+        messages.error(request, 'Sorry, only store owners can do that.')
+        return redirect(reverse('home'))
+    
     product = get_object_or_404(Product, pk=product_id)
     product.delete()
     messages.success(request, 'Product deleted!')
