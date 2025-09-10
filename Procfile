@@ -1,0 +1,1 @@
+web: gunicorn boutiqueadov5.wsgi:application
